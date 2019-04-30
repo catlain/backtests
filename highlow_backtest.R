@@ -4,6 +4,7 @@ require(rlang)
 require(dplyr)
 require(ggplot2)
 require(lubridate)
+require(stringr)
 require(purrr)
 # require(PerformanceAnalytics)
 # require(FinancialInstrument)
@@ -16,9 +17,9 @@ rm(list = ls(.strategy), envir = .strategy)
 source("highlow.R")
 
 stock_str <- "601166.SS" # 需要回测的股票
-init_date <- "2015-01-01"
+init_date <- "2001-01-01"
 # 从雅虎取得股票数据
-getSymbols(stock_str, from = init_date, index.class=c("POSIXt","POSIXct"))
+# getSymbols(stock_str, from = init_date, index.class=c("POSIXt","POSIXct"))
 # stock_df <- na.omit(adjustOHLC(get(stock_str), use.Adjusted = TRUE))
 assign(stock_str, na.omit(adjustOHLC(get(stock_str), use.Adjusted = TRUE)))
 
@@ -37,8 +38,8 @@ pct_atr <- 0.2
 n_atr <- 10
 n_ema <- 5
 period_highlow <- "week"
-n_high <- 60
-n_low <- 40
+n_high <- 180
+n_low <- 90
 buyCost <- 0.001425
 sellCost <- 0.004425
 
@@ -65,6 +66,7 @@ initOrders(portfolio = portfolio_st, initDate = init_date)
 strategy(strategy_st, store = TRUE)
 
 # 指标
+# TODO 使用 lagATR 进行仓位管理
 # add.indicator(strategy_st, name = "ATR",
 #               arguments = list(HLC = quote(HLC(mktdata)), n = n_atr),
 #               label = "atr")
@@ -155,8 +157,7 @@ add.rule(strategy_st, name = "ruleSignal",
 #                           orderside = 'long', prefer = "Close"), 
 #          type = 'exit', label = "ExitRule", enabled = T)
 
-out <- applyStrategy(strategy = strategy_st, 
-              portfolios = portfolio_st, symbols = stock_str)
+out <- applyStrategy(strategy = strategy_st, portfolios = portfolio_st, symbols = stock_str)
 
 # 更新账户资料和权益金额
 updatePortf(Portfolio = portfolio_st)
@@ -167,7 +168,7 @@ updateAcct(portfolio_st, dateRange)
 updateEndEq(account_st)
 
 # TODO 检查没有成交的原因
-trend1_book <- getOrderBook(portfolio = strategy_st)
+# trend1_book <- getOrderBook(portfolio = strategy_st)
 # trend1_book
 
 
