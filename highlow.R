@@ -67,6 +67,8 @@ highlow <- function(x, period = "week", n = 60) {
     map_dbl(~ min(filter(period_df, date <= df$date[.x], date > df$date_last_period[.x], if_low)$adjusted))
   
   select(df, adjusted, high_last_period, low_last_period) %>%
+    mutate(high_last_period = if_else(is.infinite(high_last_period), adjusted, high_last_period), 
+           low_last_period = if_else(is.infinite(low_last_period), adjusted, low_last_period), ) %>%
     zoo(., df$date) %>% # 不用.是因为需要 date 列保留
     xts()
 }

@@ -37,9 +37,9 @@ init_eq <- trade_size * length(stock_str)
 pct_atr <- 0.2
 n_atr <- 10
 n_ema <- 5
-period_highlow <- "week"
+period_highlow <- "day"
 n_high <- 180
-n_low <- 90
+n_low <- 120
 buyCost <- 0.001425
 sellCost <- 0.004425
 
